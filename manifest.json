@@ -1,0 +1,51 @@
+{
+    "manifest_version": 2,
+    "name": "Heximo",
+    "version": "0.1",
+    "description": "history export import extension for firefox",
+    "icons": {
+        "16": "icons/heximo_plain.svg",
+        "32": "icons/heximo_plain.svg",
+        "48": "icons/heximo_plain.svg",
+        "96": "icons/heximo_plain.svg"
+    },
+    "browser_action": {
+        "default_icon": "icons/heximo_plain.svg",
+        "default_title": "Heximo",
+        "default_popup": "popup/popup.html"
+    },
+    "sidebar_action": {
+        "default_title": "Heximo",
+        "default_panel": "sidebar/panel.html"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "content_scripts/heximo.js"
+            ]
+        }
+    ],
+    "background": {
+        "scripts": [
+            "background.js"
+        ]
+    },
+    "permissions": [
+        "<all_urls>",
+        "activeTab",
+        "history",
+        "tabs",
+        "storage",
+        "downloads"
+    ],
+    "commands": {
+        "_open_sidebar": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+Q"
+            }
+        }
+    }
+}
