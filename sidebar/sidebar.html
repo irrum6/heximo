@@ -10,9 +10,35 @@
 </head>
 
 <body>
+    <h1 class="text-center">Export History</h1>
     <div class="mt-2 flex-column-center">
-        <button id="export_action" class="w-50 text-center">Export</button>
+        <div>
+            <label class="f3">
+                <input type="radio" name="period" value="24h" checked>
+                Last 24 Hours
+            </label>
+        </div>
+        <div>
+            <label class="f3">
+                <input type="radio" name="period" value="30d">
+                Last 30 days
+            </label>
+        </div>
+        <div>
+            <label class="f3">
+                <input type="radio" name="period" value="365d">
+                Last 365 days
+            </label>
+        </div>
+        <div>
+            <label class="f3">
+                <input type="radio" name="period" value="all">
+                All of History
+            </label>
+        </div>
+        <button id="export_action" class="w-25 text-center">Export</button>
     </div>
+    <h1 class="text-center">Import History</h1>
     <div class="mt-2 p-4">
         <input type="file" name="history_file" accept="application/json" />
         <button id="import_action">Import</button>

@@ -9,41 +9,48 @@ const error_log = err => console.error(err);
 const active_tabs = func => browser.tabs.query({ active: true, currentWindow: true }).then(func).catch(error_log);
 
 const do_search_history = async (period) => {
-    const validValues = ["24h", "30d", "12m", "all"];
+    const validValues = ["24h", "30d", "365d", "all"];
     //12m is equal to 365 days
     if (!validValues.includes(period)) {
-        console.error("bad arguments - is either '24h', '30d', '12m' or 'all'");
+        console.error("bad arguments - is either '24h', '30d', '365d' or 'all'");
         return {};
     }
-    let minus_date = 0;
-    let hour = 60 * 60 * 1000;
+    let startTime = Date.now();
+    let hour = 3600 * 1000;
     switch (period) {
         case "24h":
-            minus_date = 24 * hour;
+            startTime -= 24 * hour;
             break;
         case "30d":
-            minus_date = 24 * hour * 30;
+            startTime -= 24 * hour * 30;
             break;
-        case "12m":
-            minus_date = 24 * hour * 365;
+        case "365d":
+            startTime -= 24 * hour * 365;
             break;
         case "all":
-            minus_date = 0;
+            startTime = 0;
             break;
         default:
             //do nothing
             break;
     }
-    let startTime = new Date(Date.now() - minus_date);
+    let mega_records = 1048576;
+    // let startTime = new Date(Date.now() - minus_date);
     let results = await browser.history.search({
-        "text": "",
-        "startTime": startTime
+        text: "",
+        startTime,
+        maxResults: mega_records
     });
     return results;
 };
 
 const do_export_history = async () => {
     let period = "24h";
+    let radio = document.body.querySelector("input[type=radio]:checked");
+    if (radio !== undefined && radio !== null) {
+        period = radio.value;
+    }
+
     let results = await do_search_history(period);
     const json_string = JSON.stringify(results);
     const bytes = new TextEncoder().encode(json_string);

@@ -49,3 +49,19 @@ button {
 .text-center {
     text-align: center;
 }
+
+.f1 {
+    font-size: 0.5rem;
+}
+
+.f2 {
+    font-size: 1rem;
+}
+
+.f3 {
+    font-size: 1.5rem;
+}
+
+.f4 {
+    font-size: 2.0rem;
+}
