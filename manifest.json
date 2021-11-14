@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Heximo",
-    "version": "0.2",
+    "version": "0.3",
     "description": "history export import extension for firefox",
     "icons": {
         "16": "icons/heximo_plain.svg",
@@ -10,9 +10,7 @@
         "96": "icons/heximo_plain.svg"
     },
     "browser_action": {
-        "default_icon": "icons/heximo_plain.svg",
-        "default_title": "Heximo",
-        "default_popup": "popup/popup.html"
+        "default_icon": "icons/heximo_plain.svg"
     },
     "sidebar_action": {
         "default_title": "Heximo",
@@ -39,7 +37,8 @@
         "history",
         "tabs",
         "storage",
-        "downloads"
+        "downloads",
+        "menus"
     ],
     "commands": {
         "_open_sidebar": {

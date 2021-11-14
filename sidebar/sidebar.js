@@ -15,9 +15,10 @@ const show_progressbar = val => {
 
 const do_search_history = async (period) => {
     const validValues = ["24h", "30d", "365d", "all"];
-    //12m is equal to 365 days
+
     if (!validValues.includes(period)) {
-        console.error("bad arguments - is either '24h', '30d', '365d' or 'all'");
+        let message = validValues.map(e => `'${e}'`).join(",");
+        console.error(`bad arguments: pass one of the followign ${message} `);
         return {};
     }
     let startTime = Date.now();
