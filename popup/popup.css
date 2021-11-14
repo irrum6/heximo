@@ -3,21 +3,23 @@ html {
 }
 
 body {
-    min-width: 200px;
+    min-width: 100px;
     min-height: 100px;
+}
+
+div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+button {
+    font-size: 1.5rem;
 }
 
 .mt-2 {
     margin-top: 0.5rem;
-    ;
-}
-
-.w-25 {
-    width: 25%;
-}
-
-.w-50 {
-    width: 50%;
 }
 
 .w-75 {
@@ -26,8 +28,4 @@ body {
 
 .w-100 {
     width: 100%;
-}
-
-button {
-    font-size: 1.5rem;
 }
