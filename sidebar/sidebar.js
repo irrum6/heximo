@@ -4,9 +4,14 @@ console.log(load_message);
 const q = s => document.body.querySelector(s);
 const on = "addEventListener";
 
-const error_log = err => console.error(err);
-
-const active_tabs = func => browser.tabs.query({ active: true, currentWindow: true }).then(func).catch(error_log);
+const show_progressbar = val => {
+    let progressbar = q("#progressbar");
+    if (true === val) {
+        progressbar.style.visibility = "visible";
+        return;
+    }
+    progressbar.style.visibility = "hidden";
+}
 
 const do_search_history = async (period) => {
     const validValues = ["24h", "30d", "365d", "all"];
@@ -46,10 +51,11 @@ const do_search_history = async (period) => {
 
 const do_export_history = async () => {
     let period = "24h";
-    let radio = document.body.querySelector("input[type=radio]:checked");
+    let radio = q("input[type=radio]:checked");
     if (radio !== undefined && radio !== null) {
         period = radio.value;
     }
+    show_progressbar(true);
 
     let results = await do_search_history(period);
     const json_string = JSON.stringify(results);
@@ -59,24 +65,33 @@ const do_export_history = async () => {
     });
     let url = URL.createObjectURL(bob);
     let filename = `history.${period}.json`;
+
+    show_progressbar(false);
+
     browser.downloads.download({ url, filename, saveAs: true });
 };
 
-const do_import_history = () => {
-    let file = document.body.querySelector("input[type=file]").files[0];
+const do_import_history = async () => {
+    let input = q("input[type=file]");
+    let file = input.files[0];
     let decoder = new TextDecoder();
-    file.arrayBuffer().then(data => {
-        let d = decoder.decode(data);
-        let array = JSON.parse(d);
+    show_progressbar(true);
 
-        for (const elem of array) {
-            browser.history.addUrl({
-                url: elem.url,
-                title: elem.title,
-                visitTime: elem.lastVisitTime
-            });
-        }
-    });
+    let data = await file.arrayBuffer();
+
+    let d = decoder.decode(data);
+    let array = JSON.parse(d);
+
+    for (const elem of array) {
+        browser.history.addUrl({
+            url: elem.url,
+            title: elem.title,
+            visitTime: elem.lastVisitTime
+        });
+    }
+    //clear input
+    input.value = "";
+    show_progressbar(false);
 }
 
 q("#export_action")[on]("click", do_export_history);

@@ -11,6 +11,18 @@ button {
     font-size: 1.5rem;
 }
 
+div.progress {
+    background-color:cadetblue;
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
+    background-size: 1rem 1rem;
+    animation: 1s linear infinite progressbar;
+}
+@keyframes progressbar {
+    0% {
+        background-position-x: 1rem;
+    }
+}
+
 .flex-column-center {
     display: flex;
     flex-direction: column;
