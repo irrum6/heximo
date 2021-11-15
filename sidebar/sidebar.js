@@ -12,9 +12,28 @@ const show_progressbar = val => {
     }
     progressbar.style.visibility = "hidden";
 }
+const get_date_on_month_start = () => {
+    let datetime = new Date();
+    //that's how you set day :(
+    datetime.setDate(1);
+    datetime.setHours(0);
+    datetime.setMinutes(0);
+    datetime.setSeconds(0);
+    datetime.setMilliseconds(0);
+    return datetime;
+}
+const get_date_on_year_start = () => {
+    let datetime = get_date_on_month_start();
+    //now reset month to 0;
+    datetime.setMonth(0);
+    return datetime;
+}
+
+const get_input_date = (input_name) => new Date(q(`input[name=${input_name}]`).value);
+
 
 const do_search_history = async (period) => {
-    const validValues = ["24h", "30d", "365d", "all"];
+    const validValues = ["24h", "30d", "365d", "this_mon", "this_year", "from_to", "all"];
 
     if (!validValues.includes(period)) {
         let message = validValues.map(e => `'${e}'`).join(",");
@@ -33,6 +52,12 @@ const do_search_history = async (period) => {
         case "365d":
             startTime -= 24 * hour * 365;
             break;
+        case "this_mon":
+            startTime = get_date_on_month_start();
+            break;
+        case "this_year":
+            startTime = get_date_on_year_start();
+            break;
         case "all":
             startTime = 0;
             break;
@@ -41,12 +66,16 @@ const do_search_history = async (period) => {
             break;
     }
     let mega_records = 1048576;
-    // let startTime = new Date(Date.now() - minus_date);
-    let results = await browser.history.search({
+    let options = {
         text: "",
         startTime,
-        maxResults: mega_records
-    });
+        maxResults: 16 * mega_records
+    };
+    if ("from_to" === period) {
+        options.startTime = get_input_date("from");
+        options.endTime = get_input_date("to");
+    }
+    let results = await browser.history.search(options);
     return results;
 };
 

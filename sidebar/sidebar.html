@@ -32,11 +32,39 @@
         </div>
         <div>
             <label class="f3">
+                <input type="radio" name="period" value="this_mon">
+                This Month
+            </label>
+        </div>
+        <div>
+            <label class="f3">
+                <input type="radio" name="period" value="this_year">
+                This Year
+            </label>
+        </div>
+        <div>
+            <label class="f3">
                 <input type="radio" name="period" value="all">
                 All of History
             </label>
         </div>
-        <button id="export_action" class="w-25 text-center">Export</button>
+        <div>
+            <label class="f3">
+                <input type="radio" name="period" value="from_to">
+                Select Period
+            </label>
+        </div>
+        <div style="visibility: visible;">
+            <label class="f3">
+                From
+                <input type="date" name="from" value="2003-11-23">
+            </label>
+            <label class="f3">
+                To
+                <input type="date" name="to" value="2023-11-23">
+            </label>
+        </div>
+        <button id="export_action" class="w-25 text-center mt-2">Export</button>
     </div>
     <h1 class="text-center">Import History</h1>
     <div class="mt-2 p-4">

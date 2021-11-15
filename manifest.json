@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
     "name": "Heximo",
-    "version": "0.3.1",
-    "description": "history export import extension for firefox",
+    "version": "0.4",
+    "description": "History export/import extension for firefox",
     "icons": {
         "16": "icons/heximo_plain.svg",
         "32": "icons/heximo_plain.svg",
