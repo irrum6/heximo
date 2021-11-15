@@ -28,8 +28,8 @@ const get_date_on_year_start = () => {
     datetime.setMonth(0);
     return datetime;
 }
-
-const get_input_date = (input_name) => new Date(q(`input[name=${input_name}]`).value);
+const get_input_value = input_name => q(`input[name=${input_name}]`).value;
+const get_input_date = (input_name) => new Date(get_input_value(input_name));
 
 
 const do_search_history = async (period) => {
@@ -95,7 +95,9 @@ const do_export_history = async () => {
     });
     let url = URL.createObjectURL(bob);
     let filename = `history.${period}.json`;
-
+    if ("from_to" === period) {
+        filename = `history.from.${get_input_value("from")}.to.${get_input_value("to")}.json`;
+    }
     show_progressbar(false);
 
     browser.downloads.download({ url, filename, saveAs: true });
