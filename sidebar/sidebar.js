@@ -98,9 +98,15 @@ const do_export_history = async () => {
     if ("from_to" === period) {
         filename = `history.from.${get_input_value("from")}.to.${get_input_value("to")}.json`;
     }
-    show_progressbar(false);
 
-    browser.downloads.download({ url, filename, saveAs: true });
+    show_progressbar(false);
+    try {
+        await browser.downloads.download({ url, filename, saveAs: true });   
+    } catch (error) {
+        console.log("CANCELED");
+    } finally {
+       
+    }
 };
 
 const do_import_history = async () => {
@@ -115,7 +121,7 @@ const do_import_history = async () => {
     let array = JSON.parse(d);
 
     for (const elem of array) {
-        browser.history.addUrl({
+        await browser.history.addUrl({
             url: elem.url,
             title: elem.title,
             visitTime: elem.lastVisitTime
