@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Heximo",
-    "version": "0.4.2",
+    "version": "0.4.3",
     "description": "History export/import extension for firefox",
     "icons": {
         "16": "icons/heximo_plain.svg",
@@ -16,16 +16,6 @@
         "default_title": "Heximo",
         "default_panel": "sidebar/sidebar.html"
     },
-    "content_scripts": [
-        {
-            "matches": [
-                "<all_urls>"
-            ],
-            "js": [
-                "content_scripts/heximo.js"
-            ]
-        }
-    ],
     "background": {
         "scripts": [
             "background.js"
