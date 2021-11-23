@@ -4,14 +4,58 @@ console.log(load_message);
 const q = s => document.body.querySelector(s);
 const on = "addEventListener";
 
-const show_progressbar = val => {
-    let progressbar = q("#progressbar");
-    if (true === val) {
-        progressbar.style.visibility = "visible";
-        return;
+const get_input_value = input_name => q(`input[name=${input_name}]`).value;
+const get_input_date = input_name => new Date(get_input_value(input_name));
+
+const HOUR = 3600 * 1000;
+const PERIODS = ["24h", "30d", "365d", "this_mon", "this_year", "from_to", "all"];
+Object.freeze(PERIODS);
+
+const get_date_by_period = period => {
+    let startTime = Date.now();
+    switch (period) {
+        case "24h":
+            startTime -= 24 * HOUR;
+            break;
+        case "30d":
+            startTime -= 24 * HOUR * 30;
+            break;
+        case "365d":
+            startTime -= 24 * HOUR * 365;
+            break;
+        case "this_mon":
+            startTime = get_date_on_month_start();
+            break;
+        case "this_year":
+            startTime = get_date_on_year_start();
+            break;
+        case "all":
+            startTime = 0;
+            break;
+        default:
+            //do nothing
+            break;
     }
-    progressbar.style.visibility = "hidden";
+    return startTime;
 }
+
+const show_progressbar = val => q("#progressbar").style.visibility = (true === val) ? "visible" : "hidden";
+
+const get_filename = period => {
+    let date = get_date_by_period(period);
+
+    let format_options = { year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' };
+    let name = new Date(date).toLocaleString('default', format_options).replace(/[\s:,]+/gi, "_");
+    let filename = `history.${period}.from.${name}.json`;
+    if ("from_to" === period) {
+        filename = `history.from.${get_input_value("from")}.to.${get_input_value("to")}.json`;
+    }
+    if ("all" === period) {
+        filename = "history.all.json"
+    }
+    return filename;
+};
+
 const get_date_on_month_start = () => {
     let datetime = new Date();
     //that's how you set day :(
@@ -28,43 +72,16 @@ const get_date_on_year_start = () => {
     datetime.setMonth(0);
     return datetime;
 }
-const get_input_value = input_name => q(`input[name=${input_name}]`).value;
-const get_input_date = (input_name) => new Date(get_input_value(input_name));
 
 
 const do_search_history = async (period) => {
-    const validValues = ["24h", "30d", "365d", "this_mon", "this_year", "from_to", "all"];
-
-    if (!validValues.includes(period)) {
-        let message = validValues.map(e => `'${e}'`).join(",");
-        console.error(`bad arguments: pass one of the followign ${message} `);
+    if (!PERIODS.includes(period)) {
+        let message = PERIODS.map(e => `'${e}'`).join(",");
+        console.error(`bad arguments: pass one of the following ${message} `);
         return {};
     }
-    let startTime = Date.now();
-    let hour = 3600 * 1000;
-    switch (period) {
-        case "24h":
-            startTime -= 24 * hour;
-            break;
-        case "30d":
-            startTime -= 24 * hour * 30;
-            break;
-        case "365d":
-            startTime -= 24 * hour * 365;
-            break;
-        case "this_mon":
-            startTime = get_date_on_month_start();
-            break;
-        case "this_year":
-            startTime = get_date_on_year_start();
-            break;
-        case "all":
-            startTime = 0;
-            break;
-        default:
-            //do nothing
-            break;
-    }
+    let startTime = get_date_by_period(period);
+
     let mega_records = 1048576;
     let options = {
         text: "",
@@ -98,14 +115,17 @@ const do_export_history = async () => {
     if ("from_to" === period) {
         filename = `history.from.${get_input_value("from")}.to.${get_input_value("to")}.json`;
     }
+    filename = get_filename(period);
 
     show_progressbar(false);
     try {
-        await browser.downloads.download({ url, filename, saveAs: true });   
+        await browser.downloads.download({ url, filename, saveAs: true });
     } catch (error) {
         console.log("CANCELED");
+        // console.error(error);
+        // console.log(filename);
     } finally {
-       
+
     }
 };
 
