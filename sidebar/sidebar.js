@@ -2,6 +2,7 @@ let load_message = `SideBar was loaded on ${new Date().toString()}`;
 console.log(load_message);
 
 const q = s => document.body.querySelector(s);
+const qa = s => document.body.querySelectorAll(s);
 const on = "addEventListener";
 
 const get_input_value = input_name => q(`input[name=${input_name}]`).value;
@@ -10,6 +11,8 @@ const get_input_date = input_name => new Date(get_input_value(input_name));
 const HOUR = 3600 * 1000;
 const PERIODS = ["24h", "30d", "365d", "this_mon", "this_year", "from_to", "all"];
 Object.freeze(PERIODS);
+
+let cache = {};
 
 const get_date_by_period = period => {
     let startTime = Date.now();
@@ -98,32 +101,44 @@ const do_search_history = async (period) => {
 
 const do_export_history = async () => {
     let period = "24h";
-    let radio = q("input[type=radio]:checked");
+    let radio = q("input[name=period]:checked");
+
     if (radio !== undefined && radio !== null) {
         period = radio.value;
     }
     show_progressbar(true);
 
-    let results = await do_search_history(period);
+    let from_cache = q("input[name=cache]:checked").value === "1";
+    let cache_exists = (undefined !== cache[period] && null !== cache[period]);
+
+    let results = [];
+    let filename = get_filename(period);
+
+    if (!from_cache || !cache_exists) {
+        results = await do_search_history(period);
+        cache[period] = {
+            data: results,
+            cachedAt: Date.now(),
+            filename
+        };
+    } else {
+        results = cache[period].data;
+        filename = cache[period].filename;
+    }
+
     const json_string = JSON.stringify(results);
     const bytes = new TextEncoder().encode(json_string);
     const bob = new Blob([bytes], {
         type: "application/json;charset=utf-8"
     });
     let url = URL.createObjectURL(bob);
-    let filename = `history.${period}.json`;
-    if ("from_to" === period) {
-        filename = `history.from.${get_input_value("from")}.to.${get_input_value("to")}.json`;
-    }
-    filename = get_filename(period);
 
     show_progressbar(false);
     try {
         await browser.downloads.download({ url, filename, saveAs: true });
+        display_cache_time();
     } catch (error) {
         console.log("CANCELED");
-        // console.error(error);
-        // console.log(filename);
     } finally {
 
     }
@@ -152,5 +167,29 @@ const do_import_history = async () => {
     show_progressbar(false);
 }
 
+const display_cache_time = () => {
+    let display = q("#cache_date_string");
+    let period = q("input[name=period]:checked");
+    let item = cache[period.value];
+    if (undefined === item || null === item) {
+        console.error("No Cache found");
+        display.textContent = "";
+        return;
+    }
+    let date = new Date(cache[period.value].cachedAt);
+    let format_options = { month: 'long', day: '2-digit', hour: '2-digit', minute: '2-digit' };
+    let date_formatted = date.toLocaleString('default', format_options);
+    display.textContent = `Cached at ${date_formatted}`;
+};
+
+window.setInterval(display_cache_time, 60 * 1000);
+
 q("#export_action")[on]("click", do_export_history);
 q("#import_action")[on]("click", do_import_history);
+
+{
+    let periods = qa("input[name=period]");
+    for (const p of periods) {
+        p[on]("change", display_cache_time);
+    }
+}
