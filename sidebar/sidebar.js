@@ -136,6 +136,7 @@ const do_export_history = async () => {
     show_progressbar(false);
     try {
         await browser.downloads.download({ url, filename, saveAs: true });
+        q("#entries_count").textContent = `exported ${results.length} entries`;
         display_cache_time();
     } catch (error) {
         console.log("CANCELED");
@@ -147,6 +148,12 @@ const do_export_history = async () => {
 const do_import_history = async () => {
     let input = q("input[type=file]");
     let file = input.files[0];
+
+    if(file == undefined){
+        alert("select a file");
+        return;
+    }
+    
     let decoder = new TextDecoder();
     show_progressbar(true);
 
@@ -155,7 +162,18 @@ const do_import_history = async () => {
     let d = decoder.decode(data);
     let array = JSON.parse(d);
 
+    let entries_num =  array.length
+
+    q("#import_entries_count").textContent = `Found ${entries_num} entries`;;
+
+    let index = 0;
+
     for (const elem of array) {
+        index++;
+        q("#progressbar").children[0].textContent = `
+        Please wait.
+        Importing entry ${index} of ${entries_num}...`;
+
         await browser.history.addUrl({
             url: elem.url,
             title: elem.title,

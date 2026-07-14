@@ -76,12 +76,18 @@
                 No
             </label>
         </div>
+        <div>
+            <span id="entries_count"></span>
+        </div>
         <button id="export_action" class="w-25 text-center mt-2">Export</button>
     </div>
     <h1 class="text-center">Import History</h1>
     <div class="mt-2 p-4">
         <input type="file" name="history_file" accept="application/json" />
         <button id="import_action">Import</button>
+        <div>
+            <span id="import_entries_count"></span>
+        </div>
     </div>
     <div id="progressbar" class="mt-4 flex-column-center" style="visibility: hidden;">
         <div class="w-50 p-2 f3 progress">Please Wait...</div>
